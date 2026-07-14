@@ -1,0 +1,190 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String            @id @default(uuid())
+  email             String            @unique
+  password          String
+  phone             String            @unique
+  username          String            @unique
+  // (Any other user‐profile fields you might have)
+  
+  // Relations for the property registration modules:
+  propertyInfo       PropertyInfo?
+  propertyRooms      PropertyRoom[]
+  connectivity       Connectivity?
+  usp                PropertyUSP?
+  amenities          Amenities?
+  mandatoryAmenities MandatoryAmenities?
+  documents          Document[]
+  rules              PropertyRules?
+  status             PropertyStatus?
+}
+
+model PropertyInfo {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  hotelName               String
+  businessOwnerName       String
+  designation             String
+  contact1Phone           String
+  contact1Email           String
+  contact1Landline        String?
+  contact2Phone           String?
+  contact2Email           String?
+  contact2Landline        String?
+  locationLocality        String
+  locationStreet          String
+  locationCity            String
+  locationState           String
+  locationCountry         String
+  locationPincode         String
+  propertyType            String
+  propertyRelationship    String
+  onLease                 Boolean
+  totalRooms              Int
+  registerOnOTAs          Boolean
+  commissionPercentToOTAs Float?
+  uploadIntroVideoUrl     String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  user                    User     @relation(fields: [userId], references: [id])
+}
+
+model PropertyRoom {
+  id                   String   @id @default(uuid())
+  userId               String
+  roomTypeName         String
+  floorNumber          Int
+  totalRooms           Int
+  roomType             String
+  bedType              String
+  roomView             String
+  smokingAllowed       Boolean
+  extraBedAllowed      Boolean
+  amenities            String[]
+  baseAdult            Int
+  maxAdult             Int
+  maxChildren          Int
+  maxOccupancy         Int
+  baseRate             Float
+  extraAdultCharge     Float
+  childCharge          Float
+  availabilityStart    String
+  availabilityEnd      String
+  totalRoomsInProperty Int
+  uploadRoomImageUrls  String[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user                 User     @relation(fields: [userId], references: [id])
+}
+
+model Connectivity {
+  id                        String   @id @default(uuid())
+  userId                    String   @unique
+  channelManagerUsed        Boolean
+  connectedWithTravelAgency Boolean
+  channelManagerName        String?
+  travelAgencyName          String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user                      User     @relation(fields: [userId], references: [id])
+}
+
+model PropertyUSP {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique
+  ageOfProperty            Int
+  historicalEventAvailable Boolean
+  historicalEventDesc      String?
+  propertyOwnerDescription String
+  nearbyPlaces             String[]
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user                     User     @relation(fields: [userId], references: [id])
+}
+
+model Amenities {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  mandatory        String[]
+  basicFacilities  String[]
+  generalServices  String[]
+  outdoorActivities String[]
+  commonAreas      String[]
+  foodAndDrink     String[]
+  healthWellness   String[]
+  businessCenter   String[]
+  beautyAndSpa     String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id])
+}
+
+model MandatoryAmenities {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  airConditioning Boolean
+  laundry         Boolean
+  newspaper       Boolean
+  parking         Boolean
+  roomService     Boolean
+  smokeDetector   Boolean
+  smokingRooms    Boolean
+  swimmingPools   Boolean
+  wifi            Boolean
+  lounge          Boolean
+  reception       Boolean
+  bar             Boolean
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model Document {
+  id             String   @id @default(uuid())
+  userId         String
+  category       String
+  fileUrl        String
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model PropertyRules {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  coupleRule   String
+  guestRule    String
+  otherRule    String
+  petRule      String
+  checkInTime  String   // <-- Add this
+  checkOutTime String   // <-- And this
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id])
+}
+model PropertyStatus {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  status    String   @default("draft") // "draft" | "submitted" | "approved"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
+}
