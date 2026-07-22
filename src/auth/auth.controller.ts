@@ -3,21 +3,21 @@
 import {
   Body,
   Controller,
-  Post,
   HttpCode,
   HttpStatus,
-  BadRequestException,
+  Post,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
 import {
-  SignupDto,
-  LoginDto,
   ForgotPasswordDto,
+  LoginDto,
   ResetPasswordDto,
+  SignupDto,
 } from './dto';
 
-@ApiTags('auth')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -25,29 +25,31 @@ export class AuthController {
   @Post('signup')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: SignupDto })
-  async signup(@Body() dto: SignupDto) {
-    return this.authService.signup(dto);
+  async signup(@Body() signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login with email & password' })
+  @ApiOperation({ summary: 'Authenticate user' })
   @ApiBody({ type: LoginDto })
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 
   @Post('forgot-password')
-  @ApiOperation({ summary: 'Request a password reset OTP' })
+  @ApiOperation({ summary: 'Send password reset OTP' })
   @ApiBody({ type: ForgotPasswordDto })
-  async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(dto.email);
+  async forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    return this.authService.forgotPassword(email);
   }
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password using OTP' })
   @ApiBody({ type: ResetPasswordDto })
-  async resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto.email, dto.otp, dto.newPassword);
+  async resetPassword(
+    @Body() { email, otp, newPassword }: ResetPasswordDto,
+  ) {
+    return this.authService.resetPassword(email, otp, newPassword);
   }
 }
