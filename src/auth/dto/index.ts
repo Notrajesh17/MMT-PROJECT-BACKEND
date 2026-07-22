@@ -10,16 +10,27 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class SignupDto {
+class EmailDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail()
   email: string;
+}
 
+class PasswordDto {
   @ApiProperty({ example: 'veryStrongPassword123' })
   @IsString()
   @MinLength(6)
   password: string;
+}
 
+class EmailPasswordDto extends EmailDto {
+  @ApiProperty({ example: 'veryStrongPassword123' })
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+
+export class SignupDto extends EmailPasswordDto {
   @ApiProperty({ example: '+911234567890' })
   @IsPhoneNumber('IN')
   phone: string;
@@ -31,28 +42,11 @@ export class SignupDto {
   username: string;
 }
 
-export class LoginDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
-  email: string;
+export class LoginDto extends EmailPasswordDto {}
 
-  @ApiProperty({ example: 'veryStrongPassword123' })
-  @IsString()
-  @MinLength(6)
-  password: string;
-}
+export class ForgotPasswordDto extends EmailDto {}
 
-export class ForgotPasswordDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
-  email: string;
-}
-
-export class ResetPasswordDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
-  email: string;
-
+export class ResetPasswordDto extends EmailDto {
   @ApiProperty({ example: '123456' })
   @IsString()
   @Length(6, 6)
