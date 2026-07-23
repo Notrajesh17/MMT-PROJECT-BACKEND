@@ -1,11 +1,13 @@
-// src/common/decorators/user.decorator.ts
-
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+interface AuthenticatedUser {
+  userId: string;
+  email: string;
+}
+
 export const UserId = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): string => {
-    const request = ctx.switchToHttp().getRequest();
-    // Our JwtStrategy returned { userId: payload.sub, email: payload.email }
-    return request.user?.userId;
+  (_: unknown, ctx: ExecutionContext): string => {
+    const request = ctx.switchToHttp().getRequest<{ user: AuthenticatedUser }>();
+    return request.user.userId;
   },
 );
